@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import { useChat } from "@ai-sdk/react";
+import { isTextUIPart } from "ai";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -18,35 +19,31 @@ interface ChatbotWidgetProps {
 
 const ChatbotWidget = ({ onAgentAction }: ChatbotWidgetProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [input, setInput] = useState("");
+  const latestStepRef = useRef<string | undefined>(undefined);
+  const onAgentActionRef = useRef(onAgentAction);
+  onAgentActionRef.current = onAgentAction;
 
-  const { messages, input, handleInputChange, handleSubmit, data, status } = useChat({
+  const { messages, sendMessage, status } = useChat({
     api: "/api/chat",
+    onData(dataPart) {
+      const chunk = dataPart.data as AgentDataChunk;
+      if (chunk.type === "step") {
+        latestStepRef.current = chunk.text;
+      } else if (chunk.type === "action" && chunk.action && chunk.action !== "none") {
+        onAgentActionRef.current(chunk.action, chunk.product_id ?? null, chunk.quantity ?? 1);
+      }
+    },
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const processedDataRef = useRef(0);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, data]);
-
-// Process action chunks emitted by the agent stream
-  useEffect(() => {
-    if (!data || data.length <= processedDataRef.current) return;
-    const newChunks = (data as AgentDataChunk[]).slice(processedDataRef.current);
-    for (const chunk of newChunks) {
-      if (chunk.type === "action" && chunk.action && chunk.action !== "none") {
-        onAgentAction(chunk.action, chunk.product_id ?? null, chunk.quantity ?? 1);
-      }
-    }
-    processedDataRef.current = data.length;
-  }, [data, onAgentAction]);
+  }, [messages]);
 
   const isStreaming = status === "streaming" || status === "submitted";
-
-  const latestStep = (data as AgentDataChunk[] | undefined)
-    ?.filter((d) => d.type === "step")
-    .at(-1)?.text;
+  const latestStep = isStreaming ? latestStepRef.current : undefined;
 
   return (
     <div className="fixed bottom-5 right-5 z-50">
@@ -85,7 +82,7 @@ const ChatbotWidget = ({ onAgentAction }: ChatbotWidgetProps) => {
                       : "bg-muted text-foreground"
                   }`}
                 >
-                  {m.content}
+                  {m.parts.filter(isTextUIPart).map((p, i) => <span key={i}>{p.text}</span>)}
                 </div>
               </div>
             ))}
@@ -104,16 +101,24 @@ const ChatbotWidget = ({ onAgentAction }: ChatbotWidgetProps) => {
           </div>
 
           {/* Input */}
-          <form onSubmit={handleSubmit} className="border-t p-3 flex gap-2 shrink-0">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!input.trim()) return;
+              sendMessage({ text: input });
+              setInput("");
+            }}
+            className="border-t p-3 flex gap-2 shrink-0"
+          >
             <Input
               autoFocus
-              value={input ?? ""}
-              onChange={handleInputChange}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about products..."
               disabled={isStreaming}
               className="text-sm"
             />
-            <Button size="icon" type="submit" disabled={isStreaming || !(input ?? "").trim()}>
+            <Button size="icon" type="submit" disabled={isStreaming || !input.trim()}>
               {isStreaming ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
