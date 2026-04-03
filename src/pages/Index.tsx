@@ -1,14 +1,24 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { ShoppingBasket, ShoppingCart } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import ProductTable from "@/components/ProductTable";
 import CheckoutList from "@/components/CheckoutList";
 import ChatbotWidget from "@/components/ChatbotWidget";
-import { products, Product } from "@/data/products";
+import { Product } from "@/data/products";
 
 const Index = () => {
+  const [products, setProducts] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState<Map<number, number>>(new Map());
+  const [highlightedProductId, setHighlightedProductId] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState("products");
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then(setProducts)
+      .catch(console.error);
+  }, []);
 
   const addToCart = useCallback((product: Product) => {
     setCartItems((prev) => {
@@ -36,6 +46,28 @@ const Index = () => {
     });
   }, []);
 
+  // Called by ChatbotWidget when the agent returns an action
+  const handleAgentAction = useCallback(
+    (action: string, productId: number | null, quantity: number) => {
+      if (!productId) return;
+      const product = products.find((p) => p.id === productId);
+      if (!product) return;
+
+      if (action === "add_to_cart") {
+        setCartItems((prev) => {
+          const next = new Map(prev);
+          next.set(product.id, (next.get(product.id) || 0) + quantity);
+          return next;
+        });
+      } else if (action === "highlight") {
+        setActiveTab("products");
+        setHighlightedProductId(productId);
+        setTimeout(() => setHighlightedProductId(null), 3000);
+      }
+    },
+    [products],
+  );
+
   const totalItems = Array.from(cartItems.values()).reduce((s, q) => s + q, 0);
 
   return (
@@ -48,7 +80,7 @@ const Index = () => {
       </header>
 
       <main className="container py-6">
-        <Tabs defaultValue="products">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-6">
             <TabsTrigger value="products" className="gap-2">
               <ShoppingBasket className="h-4 w-4" />
@@ -66,7 +98,12 @@ const Index = () => {
           </TabsList>
 
           <TabsContent value="products">
-            <ProductTable onAddToCart={addToCart} cartItems={cartItems} />
+            <ProductTable
+              products={products}
+              onAddToCart={addToCart}
+              cartItems={cartItems}
+              highlightedProductId={highlightedProductId}
+            />
           </TabsContent>
 
           <TabsContent value="checkout">
@@ -80,7 +117,7 @@ const Index = () => {
         </Tabs>
       </main>
 
-      <ChatbotWidget />
+      <ChatbotWidget onAgentAction={handleAgentAction} />
     </div>
   );
 };

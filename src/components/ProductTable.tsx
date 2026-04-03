@@ -1,5 +1,5 @@
 import { ShoppingCart } from "lucide-react";
-import { products, Product } from "@/data/products";
+import { Product } from "@/data/products";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -12,11 +12,21 @@ import {
 } from "@/components/ui/table";
 
 interface ProductTableProps {
+  products: Product[];
   onAddToCart: (product: Product) => void;
   cartItems: Map<number, number>;
+  highlightedProductId?: number | null;
 }
 
-const ProductTable = ({ onAddToCart, cartItems }: ProductTableProps) => {
+const ProductTable = ({ products, onAddToCart, cartItems, highlightedProductId }: ProductTableProps) => {
+  if (products.length === 0) {
+    return (
+      <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground text-sm">
+        Loading products...
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-lg border bg-card overflow-hidden">
       <Table>
@@ -32,8 +42,16 @@ const ProductTable = ({ onAddToCart, cartItems }: ProductTableProps) => {
         <TableBody>
           {products.map((product) => {
             const qty = cartItems.get(product.id) || 0;
+            const isHighlighted = highlightedProductId === product.id;
             return (
-              <TableRow key={product.id} className="hover:bg-muted/30 transition-colors">
+              <TableRow
+                key={product.id}
+                className={`transition-colors ${
+                  isHighlighted
+                    ? "bg-primary/10 ring-1 ring-inset ring-primary"
+                    : "hover:bg-muted/30"
+                }`}
+              >
                 <TableCell className="font-medium">{product.name}</TableCell>
                 <TableCell>
                   <Badge variant="secondary" className="font-normal">
