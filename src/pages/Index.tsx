@@ -1,7 +1,8 @@
 import { useState, useCallback, useEffect } from "react";
-import { ShoppingBasket, ShoppingCart } from "lucide-react";
+import { ShoppingBasket, ShoppingCart, Search } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import ProductTable from "@/components/ProductTable";
 import CheckoutList from "@/components/CheckoutList";
 import ChatbotWidget from "@/components/ChatbotWidget";
@@ -12,6 +13,7 @@ const Index = () => {
   const [cartItems, setCartItems] = useState<Map<number, number>>(new Map());
   const [highlightedProductId, setHighlightedProductId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("products");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetch("/api/products")
@@ -70,6 +72,13 @@ const Index = () => {
 
   const totalItems = Array.from(cartItems.values()).reduce((s, q) => s + q, 0);
 
+  const filteredProducts = searchQuery.trim()
+    ? products.filter((p) =>
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.category.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : products;
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card">
@@ -98,8 +107,17 @@ const Index = () => {
           </TabsList>
 
           <TabsContent value="products">
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search products or categories..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9"
+              />
+            </div>
             <ProductTable
-              products={products}
+              products={filteredProducts}
               onAddToCart={addToCart}
               cartItems={cartItems}
               highlightedProductId={highlightedProductId}

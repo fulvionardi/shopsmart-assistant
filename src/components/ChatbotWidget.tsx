@@ -5,13 +5,9 @@ import { isTextUIPart } from "ai";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-interface AgentDataChunk {
-  type: "action" | "step";
-  text?: string;
-  action?: "add_to_cart" | "highlight" | "none";
-  product_id?: number | null;
-  quantity?: number;
-}
+type AgentDataChunk =
+  | { type: "step"; text: string }
+  | { type: "action"; action: "add_to_cart" | "highlight" | "none"; product_id?: number | null; quantity?: number };
 
 interface ChatbotWidgetProps {
   onAgentAction: (action: string, productId: number | null, quantity: number) => void;
@@ -25,12 +21,11 @@ const ChatbotWidget = ({ onAgentAction }: ChatbotWidgetProps) => {
   onAgentActionRef.current = onAgentAction;
 
   const { messages, sendMessage, status } = useChat({
-    api: "/api/chat",
     onData(dataPart) {
-      const chunk = dataPart.data as AgentDataChunk;
+      const chunk = dataPart.data as unknown as AgentDataChunk;
       if (chunk.type === "step") {
         latestStepRef.current = chunk.text;
-      } else if (chunk.type === "action" && chunk.action && chunk.action !== "none") {
+      } else if (chunk.type === "action" && chunk.action !== "none") {
         onAgentActionRef.current(chunk.action, chunk.product_id ?? null, chunk.quantity ?? 1);
       }
     },

@@ -9,4 +9,5 @@ dependencies = [
     "uvicorn[standard]",
     "pydantic-ai",
     "python-dotenv",
+    "libsql-client>=0.3.1",
 ]

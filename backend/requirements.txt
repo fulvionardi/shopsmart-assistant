@@ -2,3 +2,4 @@ fastapi
 uvicorn[standard]
 pydantic-ai[openai]
 python-dotenv
+libsql-client

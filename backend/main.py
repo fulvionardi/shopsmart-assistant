@@ -85,7 +85,7 @@ async def chat(request: ChatRequest) -> StreamingResponse:
         yield sse({"type": "data-agent", "data": {"type": "step", "text": "Searching products..."}})
 
         result = await shop_agent.run(user_message)
-        response = result.data  # AgentResponse
+        response = result.output  # AgentResponse
 
         # Stream the message text character by character
         yield sse({"type": "text-start", "id": text_part_id})
