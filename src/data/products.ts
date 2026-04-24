@@ -4,5 +4,7 @@ export interface Product {
   category: string;
   price: number;
   unit: string;
+  quantity: number;
   inStock: boolean;
+  packageSize: string | null;
 }

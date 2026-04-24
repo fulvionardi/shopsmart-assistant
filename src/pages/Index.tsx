@@ -11,7 +11,6 @@ import { Product } from "@/data/products";
 const Index = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState<Map<number, number>>(new Map());
-  const [highlightedProductId, setHighlightedProductId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("products");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -24,21 +23,29 @@ const Index = () => {
 
   const addToCart = useCallback((product: Product) => {
     setCartItems((prev) => {
+      const current = prev.get(product.id) || 0;
+      if (current >= product.quantity) return prev;
       const next = new Map(prev);
-      next.set(product.id, (next.get(product.id) || 0) + 1);
+      next.set(product.id, current + 1);
       return next;
     });
   }, []);
 
   const updateQty = useCallback((productId: number, delta: number) => {
     setCartItems((prev) => {
+      const product = products.find((p) => p.id === productId);
+      const newQty = (prev.get(productId) || 0) + delta;
+      if (newQty <= 0) {
+        const next = new Map(prev);
+        next.delete(productId);
+        return next;
+      }
+      if (product && newQty > product.quantity) return prev;
       const next = new Map(prev);
-      const newQty = (next.get(productId) || 0) + delta;
-      if (newQty <= 0) next.delete(productId);
-      else next.set(productId, newQty);
+      next.set(productId, newQty);
       return next;
     });
-  }, []);
+  }, [products]);
 
   const removeItem = useCallback((productId: number) => {
     setCartItems((prev) => {
@@ -48,26 +55,34 @@ const Index = () => {
     });
   }, []);
 
-  // Called by ChatbotWidget when the agent returns an action
-  const handleAgentAction = useCallback(
-    (action: string, productId: number | null, quantity: number) => {
-      if (!productId) return;
-      const product = products.find((p) => p.id === productId);
-      if (!product) return;
 
-      if (action === "add_to_cart") {
-        setCartItems((prev) => {
-          const next = new Map(prev);
-          next.set(product.id, (next.get(product.id) || 0) + quantity);
-          return next;
+  // Called when user confirms a recipe proposal
+  const handleAddBatchToCart = useCallback(
+    async (items: { product_id: number; name: string; quantity: number }[]) => {
+      console.log("[batch] sending items:", items);
+      const res = await fetch("/api/cart/add-batch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(items.map((i) => ({ product_id: i.product_id, name: i.name, quantity: i.quantity }))),
+      });
+      const data: { results: { product_id: number; quantity: number; success: boolean }[] } = await res.json();
+
+      // Backend returns resolved product_id and quantity — use them directly
+      setCartItems((prev) => {
+        const next = new Map(prev);
+        data.results.forEach(({ product_id, quantity, success }) => {
+          if (!success) return;
+          next.set(product_id, (next.get(product_id) || 0) + quantity);
         });
-      } else if (action === "highlight") {
-        setActiveTab("products");
-        setHighlightedProductId(productId);
-        setTimeout(() => setHighlightedProductId(null), 3000);
-      }
+        return next;
+      });
+
+      // Refresh products so displayed quantities are up to date
+      fetch("/api/products").then((r) => r.json()).then(setProducts).catch(console.error);
+
+      return data.results;
     },
-    [products],
+    [],
   );
 
   const totalItems = Array.from(cartItems.values()).reduce((s, q) => s + q, 0);
@@ -120,7 +135,6 @@ const Index = () => {
               products={filteredProducts}
               onAddToCart={addToCart}
               cartItems={cartItems}
-              highlightedProductId={highlightedProductId}
             />
           </TabsContent>
 
@@ -135,7 +149,7 @@ const Index = () => {
         </Tabs>
       </main>
 
-      <ChatbotWidget onAgentAction={handleAgentAction} />
+      <ChatbotWidget onAddBatchToCart={handleAddBatchToCart} />
     </div>
   );
 };

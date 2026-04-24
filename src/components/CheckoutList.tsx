@@ -57,7 +57,7 @@ const CheckoutList = ({ cartItems, products, onUpdateQty, onRemove }: CheckoutLi
                       <Minus className="h-3 w-3" />
                     </Button>
                     <span className="w-6 text-center font-medium">{qty}</span>
-                    <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => onUpdateQty(product.id, 1)}>
+                    <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => onUpdateQty(product.id, 1)} disabled={qty >= product.quantity}>
                       <Plus className="h-3 w-3" />
                     </Button>
                   </div>
