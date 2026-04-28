@@ -1,6 +1,7 @@
 import asyncio
 import json
 import math
+import os
 import re
 import uuid
 
@@ -45,9 +46,11 @@ def _best_match(results: list[dict], search_term: str) -> dict:
 
 app = FastAPI(title="FreshMart API")
 
+_allowed_origins = [o.strip() for o in os.environ.get("ALLOWED_ORIGINS", "http://localhost:8080").split(",")]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080"],
+    allow_origins=_allowed_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
