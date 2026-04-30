@@ -115,7 +115,8 @@ def init_db() -> None:
         # INSERT OR IGNORE — skips existing rows, adds new ones on every startup
         conn.batch([
             libsql_client.Statement(
-                "INSERT OR IGNORE INTO products VALUES (?, ?, ?, ?, ?, ?, ?)", list(row)
+                "INSERT OR IGNORE INTO products (id, name, category, price, unit, quantity, package_size) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                list(row)
             )
             for row in _SEED_PRODUCTS
         ])
