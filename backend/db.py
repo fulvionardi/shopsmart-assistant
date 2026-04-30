@@ -7,21 +7,67 @@ load_dotenv(".env.local")
 # (id, name, category, price, unit, quantity, package_size)
 # package_size = net content of one unit; None for variable-weight items sold by lb/bunch/each
 _SEED_PRODUCTS = [
+    # Fruits
     (1,  "Organic Bananas",          "Fruits",     1.29,  "bunch",   10,  None),
-    (2,  "Whole Milk (1 gal)",       "Dairy",      3.99,  "gal",     10,  "3785 ml"),
-    (3,  "Sourdough Bread",          "Bakery",     4.49,  "loaf",    10,  "680 g"),
-    (4,  "Free-Range Eggs (12)",     "Dairy",      5.99,  "dozen",   10,  "12 count"),
-    (5,  "Chicken Breast",           "Meat",       8.99,  "lb",      10,  None),
-    (6,  "Atlantic Salmon",          "Seafood",   12.99,  "lb",       0,  None),
-    (7,  "Baby Spinach",             "Vegetables", 3.49,  "bag",     10,  "142 g"),
     (8,  "Avocados",                 "Fruits",     1.99,  "each",    10,  None),
+    (16, "Strawberries",             "Fruits",     3.99,  "punnet",  10,  "400 g"),
+    (17, "Apples (Gala)",            "Fruits",     0.89,  "each",    10,  None),
+    (18, "Lemons",                   "Fruits",     0.59,  "each",    10,  None),
+    (19, "Oranges",                  "Fruits",     0.99,  "each",    10,  None),
+    # Dairy
+    (2,  "Whole Milk (1 gal)",       "Dairy",      3.99,  "gal",     10,  "3785 ml"),
+    (4,  "Free-Range Eggs (12)",     "Dairy",      5.99,  "dozen",   10,  "12 count"),
     (9,  "Greek Yogurt",             "Dairy",      4.29,  "tub",     10,  "500 g"),
+    (13, "Cheddar Cheese",           "Dairy",      5.49,  "block",   10,  "200 g"),
+    (20, "Unsalted Butter",          "Dairy",      4.49,  "pack",    10,  "250 g"),
+    (21, "Heavy Cream",              "Dairy",      2.99,  "carton",  10,  "250 ml"),
+    (22, "Mozzarella Cheese",        "Dairy",      3.99,  "ball",    10,  "125 g"),
+    (23, "Parmesan Cheese",          "Dairy",      5.99,  "wedge",   10,  "150 g"),
+    # Bakery
+    (3,  "Sourdough Bread",          "Bakery",     4.49,  "loaf",    10,  "680 g"),
+    (24, "Whole Wheat Bread",        "Bakery",     3.49,  "loaf",    10,  "680 g"),
+    (25, "Croissants (4 pack)",      "Bakery",     4.99,  "pack",    10,  "4 count"),
+    # Meat
+    (5,  "Chicken Breast",           "Meat",       8.99,  "lb",      10,  None),
+    (26, "Ground Beef",              "Meat",       6.99,  "lb",      10,  None),
+    (27, "Bacon",                    "Meat",       7.49,  "pack",    10,  "200 g"),
+    (28, "Pork Chops",               "Meat",       7.99,  "lb",      10,  None),
+    # Seafood
+    (6,  "Atlantic Salmon",          "Seafood",   12.99,  "lb",       0,  None),
+    (29, "Shrimp",                   "Seafood",    9.99,  "lb",      10,  None),
+    # Vegetables
+    (7,  "Baby Spinach",             "Vegetables", 3.49,  "bag",     10,  "142 g"),
+    (12, "Roma Tomatoes",            "Vegetables", 2.49,  "lb",      10,  None),
+    (30, "Broccoli",                 "Vegetables", 2.49,  "head",    10,  None),
+    (31, "Bell Peppers",             "Vegetables", 1.49,  "each",    10,  None),
+    (32, "Garlic",                   "Vegetables", 0.99,  "bulb",    10,  None),
+    (33, "Yellow Onions",            "Vegetables", 1.29,  "each",    10,  None),
+    (34, "Potatoes",                 "Vegetables", 4.99,  "bag",     10,  "2 kg"),
+    (35, "Carrots",                  "Vegetables", 1.99,  "bag",     10,  "500 g"),
+    (36, "Zucchini",                 "Vegetables", 1.29,  "each",    10,  None),
+    (37, "Cherry Tomatoes",          "Vegetables", 3.49,  "punnet",  10,  "250 g"),
+    # Pantry
     (10, "Pasta (Penne)",            "Pantry",     1.79,  "box",     10,  "500 g"),
     (11, "Olive Oil (Extra Virgin)", "Pantry",     7.99,  "bottle",  10,  "750 ml"),
-    (12, "Roma Tomatoes",            "Vegetables", 2.49,  "lb",      10,  None),
-    (13, "Cheddar Cheese",           "Dairy",      5.49,  "block",   10,  "200 g"),
+    (38, "All-Purpose Flour",        "Pantry",     2.99,  "bag",     10,  "1 kg"),
+    (39, "White Sugar",              "Pantry",     2.49,  "bag",     10,  "1 kg"),
+    (40, "Basmati Rice",             "Pantry",     4.99,  "bag",     10,  "1 kg"),
+    (41, "Canned Tomatoes",          "Pantry",     1.49,  "can",     10,  "400 g"),
+    (42, "Chicken Broth",            "Pantry",     2.99,  "carton",  10,  "1 L"),
+    (43, "Honey",                    "Pantry",     5.99,  "jar",     10,  "500 g"),
+    (44, "Soy Sauce",                "Pantry",     3.49,  "bottle",  10,  "250 ml"),
+    (45, "Baking Powder",            "Pantry",     2.29,  "tin",     10,  "100 g"),
+    (46, "Vanilla Extract",          "Pantry",     4.99,  "bottle",  10,  "50 ml"),
+    # Beverages
     (14, "Orange Juice",             "Beverages",  4.99,  "carton",  10,  "1890 ml"),
-    (15, "Ground Coffee",            "Beverages",  9.99,  "bag",       0,  "340 g"),
+    (15, "Ground Coffee",            "Beverages",  9.99,  "bag",      0,  "340 g"),
+    (47, "Sparkling Water",          "Beverages",  1.29,  "bottle",  10,  "750 ml"),
+    (48, "Green Tea (20 bags)",      "Beverages",  3.99,  "box",     10,  "20 count"),
+    (49, "Almond Milk",              "Beverages",  3.49,  "carton",  10,  "1 L"),
+    # Snacks
+    (50, "Granola Bars (6 pack)",    "Snacks",     4.49,  "pack",    10,  "6 count"),
+    (51, "Mixed Nuts",               "Snacks",     7.99,  "bag",     10,  "200 g"),
+    (52, "Dark Chocolate",           "Snacks",     3.49,  "bar",     10,  "100 g"),
 ]
 
 
@@ -66,15 +112,13 @@ def init_db() -> None:
         except Exception:
             pass
 
-        result = conn.execute("SELECT COUNT(*) FROM products")
-        count = result.rows[0][0]
-        if count == 0:
-            conn.batch([
-                libsql_client.Statement(
-                    "INSERT INTO products VALUES (?, ?, ?, ?, ?, ?, ?)", list(row)
-                )
-                for row in _SEED_PRODUCTS
-            ])
+        # INSERT OR IGNORE — skips existing rows, adds new ones on every startup
+        conn.batch([
+            libsql_client.Statement(
+                "INSERT OR IGNORE INTO products VALUES (?, ?, ?, ?, ?, ?, ?)", list(row)
+            )
+            for row in _SEED_PRODUCTS
+        ])
 
 
 def get_all_products() -> list[dict]:
@@ -170,6 +214,7 @@ def reset_db() -> None:
             )
             for row in _SEED_PRODUCTS
         ])
+        print(f"Reset {len(_SEED_PRODUCTS)} products to seed quantities.")
 
 
 def _row_to_dict(columns: list[str], row) -> dict:
