@@ -2,6 +2,16 @@
 
 **Live site:** https://shopsmart-assistant.vercel.app/
 
+FreshMart is an AI-powered grocery shopping assistant that lets users browse a product catalogue and interact with a smart chatbot to build their cart. Instead of manually searching through items, users can have a natural conversation with the assistant to find products, get recipe ideas, and add ingredients directly to their cart.
+
+**Users can:**
+- Browse the full product catalogue with real-time stock availability
+- Ask the chatbot for a specific product (e.g. *"do you have any dairy?"*)
+- Request a recipe (e.g. *"give me a pasta recipe"*) and get a step-by-step preparation guide with exact quantities and timing
+- See which ingredients are available in store (green), out of stock (yellow), or not carried (red)
+- Add all available recipe ingredients to the cart in one click
+- Manage cart quantities and proceed to checkout
+
 ![FreshMart screenshot](docs/screenshot.png)
 
 ## How the Chatbot Works
