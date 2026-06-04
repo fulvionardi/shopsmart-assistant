@@ -1,5 +1,9 @@
 # FreshMart — AI Shopping Assistant
 
+**Live site:** https://shopsmart-assistant.vercel.app/
+
+![FreshMart screenshot](docs/screenshot.png)
+
 ## How the Chatbot Works
 
 ### The Recipe Flow
