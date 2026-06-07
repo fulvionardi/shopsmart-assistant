@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import ProductTable from "@/components/ProductTable";
 import CheckoutList from "@/components/CheckoutList";
 import ChatbotWidget from "@/components/ChatbotWidget";
+import InfoCard from "@/components/InfoCard";
 import { Product } from "@/data/products";
 
 const Index = () => {
@@ -149,6 +150,7 @@ const Index = () => {
         </Tabs>
       </main>
 
+      <InfoCard />
       <ChatbotWidget onAddBatchToCart={handleAddBatchToCart} />
     </div>
   );

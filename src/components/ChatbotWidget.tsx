@@ -40,7 +40,7 @@ const itemStatus = (item: RecipeItem) => {
 };
 
 const ChatbotWidget = ({ onAddBatchToCart }: ChatbotWidgetProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [input, setInput] = useState("");
   const [proposal, setProposal] = useState<PendingProposal | null>(null);
   const [batchStatus, setBatchStatus] = useState<"idle" | "loading" | "done">("idle");
