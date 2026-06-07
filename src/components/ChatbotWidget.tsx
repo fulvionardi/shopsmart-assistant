@@ -107,9 +107,10 @@ const ChatbotWidget = ({ onAddBatchToCart }: ChatbotWidgetProps) => {
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-3 space-y-3 text-sm">
             {messages.length === 0 && (
-              <p className="text-muted-foreground text-center mt-6 text-xs">
-                Hi! Ask me to find products, add them to your cart, or suggest a recipe.
-              </p>
+              <div className="text-center mt-6 space-y-2">
+                <p className="text-muted-foreground text-xs">Hi! Ask me to find products, add them to your cart, or suggest a recipe.</p>
+                <p className="text-xs text-muted-foreground/60 italic">e.g. Ask for a tomato pasta recipe</p>
+              </div>
             )}
 
             {messages.map((m) => (

@@ -7,7 +7,7 @@ const bullets = [
     text: "Built and maintained by Fulvio Nardi",
   },
   {
-    text: "A virtual grocery store with an AI-powered chatbot — describe what you need and it builds your cart for you.",
+    text: "A virtual grocery store with an AI-powered chatbot. Describe what you need and it builds your cart for you.",
   },
   {
     text: 'Ask for any recipe (e.g. "give me a tomato pasta recipe") and get a step-by-step guide with exact quantities, timing, and one-click cart filling for all available ingredients.',
@@ -29,7 +29,7 @@ const bullets = [
     ),
   },
   {
-    text: "Stack: Turso (database) · Vercel (frontend) · Render (backend) · Qwen 2.5-7B-Instruct (AI agent)",
+    text: "Stack: Turso (database), Vercel (frontend), Render (backend), Qwen 2.5-7B-Instruct (AI agent)",
   },
 ];
 
