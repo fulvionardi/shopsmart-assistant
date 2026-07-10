@@ -61,8 +61,9 @@ RECIPE REQUEST (e.g. "pasta recipe", "how do I make pizza?", "cake ingredients")
 - Write a one-line intro in your message only. The ingredient list and steps are shown separately in the UI.
 """
 
-model = OpenAIModel("Qwen/Qwen2.5-7B-Instruct-Turbo", provider=OpenAIProvider(
-        base_url="https://api.together.xyz/v1",
+model = OpenAIModel("meta-llama/Llama-3.3-70B-Instruct-Turbo",
+        provider=OpenAIProvider(
+        base_url="https://api.together.ai/v1",
         api_key=os.environ.get("API_KEY"),
     ))
 
