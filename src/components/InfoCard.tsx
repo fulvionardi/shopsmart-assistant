@@ -29,7 +29,7 @@ const bullets = [
     ),
   },
   {
-    text: "Stack: Turso (database), Vercel (frontend), Render (backend), Llama-3.3-70B-Instruct-Turbo (AI agent)",
+    text: "Stack: Turso (database), Vercel (frontend), Render (backend), Qwen3-235B (AI agent)",
   },
 ];
 
