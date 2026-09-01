@@ -5,6 +5,8 @@ from pydantic import BaseModel
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.providers.openai import OpenAIProvider
+from pydantic_ai.models.openrouter import OpenRouterModel
+from pydantic_ai.providers.openrouter import OpenRouterProvider
 
 
 class RecipeIngredient(BaseModel):
@@ -61,11 +63,10 @@ RECIPE REQUEST (e.g. "pasta recipe", "how do I make pizza?", "cake ingredients")
 - Write a one-line intro in your message only. The ingredient list and steps are shown separately in the UI.
 """
 
-model = OpenAIModel("arize-ai/qwen-2-1.5b-instruct",
-        provider=OpenAIProvider(
-        base_url="https://api.together.ai/v1",
-        api_key=os.environ.get("API_KEY"),
-    ))
+model = OpenRouterModel(
+    "qwen/qwen3-vl-32b-instruct",
+    provider=OpenRouterProvider(api_key=os.environ.get("OPENROUTER_API_KEY")),
+)
 
 shop_agent = Agent(
     model,
