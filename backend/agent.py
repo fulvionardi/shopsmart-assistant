@@ -3,10 +3,8 @@ from typing import Literal
 
 from pydantic import BaseModel
 from pydantic_ai import Agent
-from pydantic_ai.models.openai import OpenAIModel
+from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider
-from pydantic_ai.models.openrouter import OpenRouterModel
-from pydantic_ai.providers.openrouter import OpenRouterProvider
 
 
 class RecipeIngredient(BaseModel):
@@ -63,9 +61,12 @@ RECIPE REQUEST (e.g. "pasta recipe", "how do I make pizza?", "cake ingredients")
 - Write a one-line intro in your message only. The ingredient list and steps are shown separately in the UI.
 """
 
-model = OpenRouterModel(
+model = OpenAIChatModel(
     "qwen/qwen3-vl-32b-instruct",
-    provider=OpenRouterProvider(api_key=os.environ.get("OPENROUTER_API_KEY")),
+    provider=OpenAIProvider(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=os.environ.get("OPENROUTER_API_KEY"),
+    ),
 )
 
 shop_agent = Agent(
