@@ -1,7 +1,7 @@
 import os
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider
@@ -23,14 +23,14 @@ class RecipeItem(BaseModel):
 
 class CartAction(BaseModel):
     action: Literal["propose", "none"]
-    recipe_ingredients: list[RecipeIngredient] = []  # always populated by model
-    recipe_items: list[RecipeItem] = []              # populated by backend after DB lookup
-    steps: list[str] = []
-    is_recipe: bool = False
+    is_recipe: bool
+    recipe_ingredients: list[RecipeIngredient]  # always populated by model
+    steps: list[str]
+    recipe_items: list[RecipeItem] = []         # populated by backend after DB lookup
 
 
 class AgentResponse(BaseModel):
-    message: str
+    message: str = Field(min_length=1)
     cart_action: CartAction
 
 
@@ -38,7 +38,7 @@ _SYSTEM_PROMPT = """
 You are FreshMart's shopping assistant. Never call any tools — the backend handles all store lookups.
 
 General rules:
-- Pure greetings only (e.g. "hello", "thanks"): set action to "none", leave recipe_ingredients empty.
+- Pure greetings only (e.g. "hello", "thanks"): reply with a short friendly message, set action to "none", leave recipe_ingredients empty.
 - ANY question about products, availability, or categories: set action to "propose".
 - Product interactions: set action to "propose".
 
@@ -62,7 +62,7 @@ RECIPE REQUEST (e.g. "pasta recipe", "how do I make pizza?", "cake ingredients")
 """
 
 model = OpenAIChatModel(
-    "qwen/qwen3-vl-32b-instruct",
+    "qwen/qwen3-vl-30b-a3b-instruct",
     provider=OpenAIProvider(
         base_url="https://openrouter.ai/api/v1",
         api_key=os.environ.get("OPENROUTER_API_KEY"),
